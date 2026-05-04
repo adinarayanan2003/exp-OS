@@ -1,0 +1,32 @@
+# Build products
+*.o
+*.dSYM/
+
+# Generated parser reports
+y.output
+
+# Local binaries
+toolchain/expl/expl-bin
+toolchain/expl/ltranslate
+toolchain/spl/spl
+toolchain/xfs-interface/xfs-interface
+toolchain/xsm/xsm
+kernel/expl/expl-bin
+kernel/expl/ltranslate
+kernel/nespl/spl
+kernel/nexfs-interface/xfs-interface
+kernel/nexsm/xsm
+
+# Generated machine and filesystem state
+*.xfs
+mem
+.temp
+tempfile.*.xsm
+rootfile.txt
+inodeusertable.txt
+assemblycode.xsm
+
+# Host/editor noise
+.DS_Store
+.idea/
+.vscode/

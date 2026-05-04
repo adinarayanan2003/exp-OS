@@ -1,0 +1,82 @@
+alias functionNum R1;
+
+// acquire kernel lock
+if(functionNum == 1) then
+	if(CORE == SECONDARY_CORE) then
+		if(([SYSTEM_STATUS_TABLE + 5] == 1) || ([SYSTEM_STATUS_TABLE + 7] == 1)) then
+			[PROCESS_TABLE + [SYSTEM_STATUS_TABLE + 5*CORE + 1]*16 + 4] = READY;
+			
+			multipush(R1);
+			call MOD_5;
+			multipop(R1);
+		endif;
+	endif;
+	
+	//using the unused words in the access lock table
+	// ACCESS_LOCK_TABLE + 3 -> p1_inside for kern
+	// ACCESS_LOCK_TABLE + 4 -> p2_inside for kern
+	// ACCESS_LOCK_TABLE + 7 -> favoured
+	
+	
+	
+	alias oppReg R2;
+	if(CORE == 1) then
+		oppReg = 0;
+	else
+		oppReg = 1;
+	endif;
+	
+	[ACCESS_LOCK_TABLE + 3 + CORE] = 1;
+	[ACCESS_LOCK_TABLE + 7] = oppReg;
+	
+	while(([ACCESS_LOCK_TABLE + 3 + oppReg] == 1) && ([ACCESS_LOCK_TABLE + 7] == oppReg)) do
+		continue;
+	endwhile;
+	
+	return;
+endif;
+
+// acquire sched lock
+if(functionNum == 2) then
+
+	//using the unused words in the access lock table
+	// ACCESS_LOCK_TABLE + 5 -> p1_inside for shed
+	// ACCESS_LOCK_TABLE + 6 -> p2_inside for shed
+	// ACCESS_LOCK_TABLE + 7 -> favoured
+	
+	
+	
+	alias oppReg R2;
+	if(CORE == 1) then
+		oppReg = 0;
+	else
+		oppReg = 1;
+	endif;
+	
+	[ACCESS_LOCK_TABLE + 5 + CORE] = 1;
+	[ACCESS_LOCK_TABLE + 7] = oppReg;
+	
+	while(([ACCESS_LOCK_TABLE + 5 + oppReg] == 1) && ([ACCESS_LOCK_TABLE + 7] == oppReg)) do
+		continue;
+	endwhile;
+	
+	return;
+endif;
+
+// release lock
+if(functionNum == 4) then
+	//print "RELEASE";
+	alias LockVarAddress R2;
+	
+	if(LockVarAddress == ACCESS_LOCK_TABLE + 1) then
+		[ACCESS_LOCK_TABLE + 5 + CORE] = 0;
+	endif;
+	
+	if(LockVarAddress == ACCESS_LOCK_TABLE) then
+		[ACCESS_LOCK_TABLE + 3 + CORE] = 0;
+	endif;
+	
+	return;
+endif;
+
+
