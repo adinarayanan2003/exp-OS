@@ -10,7 +10,7 @@ in SPL, user programs are written in ExpL, and the system boots into a virtual
 machine with explicit page tables, process state, disk blocks, interrupts, and
 system calls.
 
-## What It Includes
+## Key features
 
 - Multistage boot path with a secondary loader and OS startup module
 - Process table, ready/wait states, scheduler, context switching, and idle tasks
